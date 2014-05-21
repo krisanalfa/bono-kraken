@@ -1,0 +1,17 @@
+{
+    "name": "krisanalfa/bono-kraken",
+    "description": "Dependency Injection Container for Bono PHP Framework",
+    "autoload": {
+        "psr-0": {
+            "KrisanAlfa\\Kraken": "src/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Krisan Alfa Timur",
+            "email": "krisan47@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
