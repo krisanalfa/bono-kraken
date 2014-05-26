@@ -17,6 +17,11 @@ use KrisanAlfa\Kraken\KrakenException;
 class ControllerMiddleware extends Middleware
 {
     /**
+     * @var array
+     */
+    public $options = array();
+
+    /**
      * Call the middleware
      *
      * @return void

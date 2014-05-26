@@ -118,7 +118,11 @@ class Kraken implements ArrayAccess
         $dependencies = array();
 
         foreach ($parameters as $parameter) {
-            $dependency = $parameter->getClass();
+            try {
+                $dependency = $parameter->getClass();
+            } catch (Exception $e) {
+                App::getInstance()->error($e);
+            }
 
             if (array_key_exists($parameter->name, $primitives)) {
                 $dependencies[] = $primitives[$parameter->name];

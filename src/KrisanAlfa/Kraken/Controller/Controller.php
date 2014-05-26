@@ -15,8 +15,13 @@ use Norm\Norm;
  * @license   https://raw.github.com/xinix-technology/bono/master/LICENSE MIT
  * @link      https://github.com/krisanalfa/bonoblade
  */
-class Controller extends BonoController implements ControllerInterface
+abstract class Controller extends BonoController implements ControllerInterface
 {
+    /**
+     * @var null
+     */
+    private $collection = null;
+
     /**
      * Reset the construct from parent
      */
@@ -37,14 +42,5 @@ class Controller extends BonoController implements ControllerInterface
         parent::__construct($app, $uri);
 
         $this->collection = Norm::factory($this->clazz);
-    }
-
-    /**
-     * Define mapRoute()
-     *
-     * @return void
-     */
-    public function mapRoute()
-    {
     }
 }
