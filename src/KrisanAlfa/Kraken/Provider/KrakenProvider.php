@@ -6,12 +6,12 @@ use KrisanAlfa\Kraken\Kraken;
 /**
  * KrakenProvider
  *
+ * @property  mixed  options
+ * @property  mixed  app
  * @category  Provider
  * @package   Bono
  * @author    Krisan Alfa Timur <krisan47@gmail.com>
  * @copyright 2013 PT Sagara Xinix Solusitama
- * @license   https://raw.github.com/xinix-technology/bono/master/LICENSE MIT
- * @link      https://github.com/krisanalfa/bonoblade
  */
 class KrakenProvider extends Provider
 {
@@ -29,12 +29,14 @@ class KrakenProvider extends Provider
         $this->options = $this->app->config('kraken.controllers');
 
         if (!isset($this->options['dependencies'])) {
-            $this->options['dependencies'] = array();
+            $this->options['dependencies'] = [];
         }
 
-        $dependencies = $this->options['dependencies'];
+        if (isset($this->options['dependencies'])) {
+            $dependencies = $this->options['dependencies'];
 
-        $this->registerDependencies($dependencies);
+            $this->registerDependencies($dependencies);
+        }
     }
 
     /**

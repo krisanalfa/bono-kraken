@@ -1,6 +1,5 @@
 <?php namespace KrisanAlfa\Kraken;
 
-use KrisanAlfa\Kraken\KrakenException;
 use ArrayAccess;
 use ReflectionParameter;
 use ReflectionClass;
@@ -15,8 +14,6 @@ use Exception;
  * @package   Bono
  * @author    Krisan Alfa Timur <krisan47@gmail.com>
  * @copyright 2013 PT Sagara Xinix Solusitama
- * @license   https://raw.github.com/xinix-technology/bono/master/LICENSE MIT
- * @link      https://github.com/krisanalfa/bonoblade
  */
 class Kraken implements ArrayAccess
 {
@@ -25,49 +22,49 @@ class Kraken implements ArrayAccess
      *
      * @var array
      */
-    protected $resolved = array();
+    protected $resolved = [];
 
     /**
      * The list of dependencies that has been registered
      *
      * @var array
      */
-    protected $register = array();
+    protected $register = [];
 
     /**
      * The list of instances from contracts
      *
      * @var array
      */
-    protected $instances = array();
+    protected $instances = [];
 
     /**
      * The list of rebound callbacks
      *
      * @var array
      */
-    protected $reboundCallbacks = array();
+    protected $reboundCallbacks = [];
 
     /**
      * The list of resolved callbacks
      *
      * @var array
      */
-    protected $resolvingCallbacks = array();
+    protected $resolvingCallbacks = [];
 
     /**
      * The list of resolved callbacks as global callbacks
      *
      * @var array
      */
-    protected $globalResolvingCallbacks = array();
+    protected $globalResolvingCallbacks = [];
 
     /******************************************************************************************************************/
 
     /**
      * Get the Closure to be used when building a type.
      *
-     * @param string $abstract
+     * @param string $contract
      * @param string $concrete
      *
      * @return \Closure
@@ -84,19 +81,19 @@ class Kraken implements ArrayAccess
     /**
      * Get the rebound callbacks for a given type.
      *
-     * @param string $abstract
+     * @param string $contract
      *
      * @return array
      */
     protected function getReboundCallbacks($contract)
     {
-        return (isset($this->reboundCallbacks[$contract])) ? $this->reboundCallbacks[$contract] : array();
+        return (isset($this->reboundCallbacks[$contract])) ? $this->reboundCallbacks[$contract] : [];
     }
 
     /**
      * Get the concrete type for a given abstract.
      *
-     * @param string $abstract
+     * @param string $contract
      *
      * @return mixed $concrete
      */
@@ -113,9 +110,9 @@ class Kraken implements ArrayAccess
      *
      * @return array
      */
-    protected function getDependencies($parameters, array $primitives = array())
+    protected function getDependencies($parameters, array $primitives = [])
     {
-        $dependencies = array();
+        $dependencies = [];
 
         foreach ($parameters as $parameter) {
             try {
@@ -202,6 +199,7 @@ class Kraken implements ArrayAccess
     /**
      * Fire all of the resolving callbacks.
      *
+     * @param       $contract
      * @param mixed $object
      *
      * @return void
@@ -253,7 +251,9 @@ class Kraken implements ArrayAccess
     /**
      * Fire the "rebound" callbacks for the given abstract type.
      *
-     * @param string $abstract
+     * @param $contract
+     *
+     * @internal param string $abstract
      *
      * @return void
      */
@@ -271,7 +271,9 @@ class Kraken implements ArrayAccess
     /**
      * Determine if a given type is shared.
      *
-     * @param string $abstract
+     * @param $contract
+     *
+     * @internal param string $abstract
      *
      * @return bool
      */
@@ -285,8 +287,10 @@ class Kraken implements ArrayAccess
     /**
      * Determine if the given concrete is buildable.
      *
-     * @param mixed  $concrete
-     * @param string $abstract
+     * @param mixed $concrete
+     * @param       $contract
+     *
+     * @internal param string $abstract
      *
      * @return bool
      */
@@ -298,7 +302,9 @@ class Kraken implements ArrayAccess
     /**
      * Determine if the given abstract type has been registered.
      *
-     * @param string $abstract
+     * @param $contract
+     *
+     * @internal param string $abstract
      *
      * @return bool
      */
@@ -312,10 +318,11 @@ class Kraken implements ArrayAccess
     /**
      * Register a binding with the container.
      *
-     * @param string              $abstract
+     * @param                     $contract
      * @param Closure|string|null $concrete
      * @param bool                $shared
      *
+     * @internal param string $abstract
      * @return void
      */
     public function register($contract, $concrete = null, $shared = false)
@@ -334,9 +341,10 @@ class Kraken implements ArrayAccess
     /**
      * Bind a shared Closure into the container.
      *
-     * @param string   $abstract
+     * @param          $contract
      * @param \Closure $closure
      *
+     * @internal param string $abstract
      * @return void
      */
     public function shared($contract, Closure $closure)
@@ -347,9 +355,10 @@ class Kraken implements ArrayAccess
     /**
      * Register a shared binding in the container.
      *
-     * @param string              $abstract
+     * @param                     $contract
      * @param Closure|string|null $concrete
      *
+     * @internal param string $abstract
      * @return void
      */
     public function singleton($contract, $concrete = null)
@@ -362,12 +371,13 @@ class Kraken implements ArrayAccess
     /**
      * Resolve the given type from the container.
      *
-     * @param string $abstract
-     * @param array  $parameters
+     * @param       $contract
+     * @param array $parameters
      *
+     * @internal param string $abstract
      * @return mixed
      */
-    public function resolve($contract, $parameters = array())
+    public function resolve($contract, $parameters = [])
     {
         $this->resolved[$contract] = true;
 
@@ -395,7 +405,7 @@ class Kraken implements ArrayAccess
      *
      * @throws KrakenException
      */
-    public function build($concrete, $parameters = array())
+    public function build($concrete, $parameters = [])
     {
         if ($concrete instanceof Closure) return $concrete($this, $parameters);
 

@@ -9,8 +9,6 @@ use Bono\App;
  * @package   Bono
  * @author    Krisan Alfa Timur <krisan47@gmail.com>
  * @copyright 2013 PT Sagara Xinix Solusitama
- * @license   https://raw.github.com/xinix-technology/bono/master/LICENSE MIT
- * @link      https://github.com/krisanalfa/bonoblade
  */
 interface ControllerInterface
 {

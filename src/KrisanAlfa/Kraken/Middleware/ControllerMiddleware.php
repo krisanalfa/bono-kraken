@@ -11,15 +11,18 @@ use KrisanAlfa\Kraken\KrakenException;
  * @package   Bono
  * @author    Krisan Alfa Timur <krisan47@gmail.com>
  * @copyright 2013 PT Sagara Xinix Solusitama
- * @license   https://raw.github.com/xinix-technology/bono/master/LICENSE MIT
- * @link      https://github.com/krisanalfa/bonoblade
  */
 class ControllerMiddleware extends Middleware
 {
     /**
      * @var array
      */
-    public $options = array();
+    protected $options = [];
+
+    /**
+     * @var Bono\App
+     */
+    protected $app;
 
     /**
      * Call the middleware
@@ -31,7 +34,9 @@ class ControllerMiddleware extends Middleware
         $this->options = $this->app->config('kraken.controllers');
 
         if (empty($this->options['mapping'])) {
-            return $this->next->call();
+            $this->next->call();
+
+            return;
         }
 
         $mapping = $this->options['mapping'];
@@ -72,7 +77,8 @@ class ControllerMiddleware extends Middleware
      * @param string $Map Controller class name
      * @param string $uri Base URI of it's controller given in the first argument
      *
-     * @return
+     * @throws \KrisanAlfa\Kraken\KrakenException
+     * @return void
      */
     protected function registerController($Map, $uri)
     {
@@ -84,7 +90,13 @@ class ControllerMiddleware extends Middleware
             $Map = $this->options['default'];
         }
 
-        $this->app->controller = $controller = $this->app->kraken->resolve($Map);
+        if (!empty($this->app)) {
+            $this->app->controller = $controller = $this->app->kraken->resolve($Map);
+        }
+
+        if (! isset($controller)) {
+            return;
+        }
 
         if (! $controller instanceof ControllerInterface) {
             throw new KrakenException(
