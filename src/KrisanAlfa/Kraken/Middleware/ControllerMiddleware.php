@@ -17,7 +17,7 @@ class ControllerMiddleware extends Middleware
     /**
      * @var array
      */
-    protected $options = [];
+    public $options = array();
 
     /**
      * @var Bono\App

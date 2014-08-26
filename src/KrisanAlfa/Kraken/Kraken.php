@@ -22,42 +22,42 @@ class Kraken implements ArrayAccess
      *
      * @var array
      */
-    protected $resolved = [];
+    protected $resolved = array();
 
     /**
      * The list of dependencies that has been registered
      *
      * @var array
      */
-    protected $register = [];
+    protected $register = array();
 
     /**
      * The list of instances from contracts
      *
      * @var array
      */
-    protected $instances = [];
+    protected $instances = array();
 
     /**
      * The list of rebound callbacks
      *
      * @var array
      */
-    protected $reboundCallbacks = [];
+    protected $reboundCallbacks = array();
 
     /**
      * The list of resolved callbacks
      *
      * @var array
      */
-    protected $resolvingCallbacks = [];
+    protected $resolvingCallbacks = array();
 
     /**
      * The list of resolved callbacks as global callbacks
      *
      * @var array
      */
-    protected $globalResolvingCallbacks = [];
+    protected $globalResolvingCallbacks = array();
 
     /******************************************************************************************************************/
 
@@ -71,7 +71,7 @@ class Kraken implements ArrayAccess
      */
     protected function getClosure($contract, $concrete)
     {
-        return function($container) use ($contract, $concrete) {
+        return function ($container) use ($contract, $concrete) {
             $method = ($contract == $concrete) ? 'build' : 'resolve';
 
             return $container->$method($concrete);
@@ -110,9 +110,9 @@ class Kraken implements ArrayAccess
      *
      * @return array
      */
-    protected function getDependencies($parameters, array $primitives = [])
+    protected function getDependencies($parameters, array $primitives = array())
     {
-        $dependencies = [];
+        $dependencies = array();
 
         foreach ($parameters as $parameter) {
             try {
@@ -239,7 +239,7 @@ class Kraken implements ArrayAccess
      */
     protected function share(Closure $closure)
     {
-        return function($container) use ($closure) {
+        return function ($container) use ($closure) {
             static $object;
 
             $object = $object ?: $closure($container);
@@ -377,7 +377,7 @@ class Kraken implements ArrayAccess
      * @internal param string $abstract
      * @return mixed
      */
-    public function resolve($contract, $parameters = [])
+    public function resolve($contract, $parameters = array())
     {
         $this->resolved[$contract] = true;
 
@@ -399,13 +399,13 @@ class Kraken implements ArrayAccess
     /**
      * Instantiate a concrete instance of the given type.
      *
-     * @param  string  $concrete
-     * @param  array   $parameters
+     * @param  string $concrete
+     * @param  array  $parameters
      * @return mixed
      *
      * @throws KrakenException
      */
-    public function build($concrete, $parameters = [])
+    public function build($concrete, $parameters = array())
     {
         if ($concrete instanceof Closure) return $concrete($this, $parameters);
 
@@ -470,7 +470,7 @@ class Kraken implements ArrayAccess
      */
     public function offsetSet($key, $value)
     {
-        $value = ($value instanceof Closure) ? $value : $value = function() use ($value) { return $value; };
+        $value = ($value instanceof Closure) ? $value : $value = function () use ($value) { return $value; };
 
         $this->register($key, $value);
     }

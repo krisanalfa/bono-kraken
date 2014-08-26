@@ -22,14 +22,14 @@ class KrakenProvider extends Provider
      */
     public function initialize()
     {
-        $this->app->container->singleton('kraken', function() {
+        $this->app->container->singleton('kraken', function () {
             return new Kraken;
         });
 
         $this->options = $this->app->config('kraken.controllers');
 
         if (!isset($this->options['dependencies'])) {
-            $this->options['dependencies'] = [];
+            $this->options['dependencies'] = array();
         }
 
         if (isset($this->options['dependencies'])) {
