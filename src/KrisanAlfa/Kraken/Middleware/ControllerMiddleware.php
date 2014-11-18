@@ -3,6 +3,7 @@
 use Slim\Middleware;
 use KrisanAlfa\Kraken\Contract\ControllerInterface;
 use KrisanAlfa\Kraken\KrakenException;
+use RuntimeException;
 
 /**
  * ControllerMiddleware
@@ -31,7 +32,13 @@ class ControllerMiddleware extends Middleware
      */
     public function call()
     {
-        $this->options = $this->app->config('kraken.controllers');
+        $bonoProviders = $this->app->config('bono.providers');
+
+        if (!isset($bonoProviders['KrisanAlfa\\Kraken\\Provider\\KrakenProvider'])) {
+            throw new RuntimeException('KrisanAlfa\\Kraken\\Provider\\KrakenProvider should be provided with some basic configuration.');
+        }
+
+        $this->options = $bonoProviders['KrisanAlfa\\Kraken\\Provider\\KrakenProvider'];
 
         if (empty($this->options['mapping'])) {
             $this->next->call();
