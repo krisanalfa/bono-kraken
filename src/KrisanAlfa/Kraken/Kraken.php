@@ -409,21 +409,17 @@ class Kraken implements ArrayAccess
     {
         if ($concrete instanceof Closure) return $concrete($this, $parameters);
 
-        try {
-            $reflector = new ReflectionClass($concrete);
-        } catch (Exception $e) {
-            App::getInstance()->error($e);
-        }
+        $reflector = new ReflectionClass($concrete);
 
         if (! $reflector->isInstantiable()) {
             $message = "Dependency [$concrete] is not registered, thus the concrete is not instantiable.";
 
-            App::getInstance()->error(new KrakenException($message));
+            throw new KrakenException($message);
         }
 
         $constructor = $reflector->getConstructor();
 
-        if (is_null($constructor)) return new $concrete;
+        if (is_null($constructor)) return new $concrete();
 
         $dependencies = $constructor->getParameters();
 
