@@ -25,25 +25,5 @@ class KrakenProvider extends Provider
         $this->app->container->singleton('kraken', function () {
             return new Kraken();
         });
-
-        if (!isset($this->options['dependencies'])) {
-            return;
-        }
-
-        $this->registerDependencies($this->options['dependencies']);
-    }
-
-    /**
-     * Register all dependencies to the kraken container
-     *
-     * @param array $dependencies Dependencies mapping from configuration
-     *
-     * @return void
-     */
-    protected function registerDependencies(array $dependencies)
-    {
-        foreach ($dependencies as $contract => $concrete) {
-            $this->app->kraken->register($contract, $concrete);
-        }
     }
 }
