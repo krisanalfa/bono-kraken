@@ -29,7 +29,7 @@ class Kraken implements ArrayAccess
      *
      * @var array
      */
-    protected $register = array();
+    protected $registry = array();
 
     /**
      * The list of instances from contracts
@@ -71,10 +71,10 @@ class Kraken implements ArrayAccess
      */
     protected function getClosure($contract, $concrete)
     {
-        return function ($container) use ($contract, $concrete) {
+        return function ($container, $parameters = array()) use ($contract, $concrete) {
             $method = ($contract == $concrete) ? 'build' : 'resolve';
 
-            return $container->$method($concrete);
+            return $container->$method($concrete, $parameters);
         };
     }
 
@@ -99,7 +99,7 @@ class Kraken implements ArrayAccess
      */
     protected function getConcrete($contract)
     {
-        return (isset($this->register[$contract])) ? $this->register[$contract]['concrete'] : $contract;
+        return (isset($this->registry[$contract])) ? $this->registry[$contract]['concrete'] : $contract;
     }
 
     /**
@@ -115,11 +115,7 @@ class Kraken implements ArrayAccess
         $dependencies = array();
 
         foreach ($parameters as $parameter) {
-            try {
-                $dependency = $parameter->getClass();
-            } catch (Exception $e) {
-                App::getInstance()->error($e);
-            }
+            $dependency = $parameter->getClass();
 
             if (array_key_exists($parameter->name, $primitives)) {
                 $dependencies[] = $primitives[$parameter->name];
@@ -149,7 +145,7 @@ class Kraken implements ArrayAccess
         } else {
             $message = "Dependency {$parameter} unresolved nor they're registered.";
 
-            App::getInstance()->error(new KrakenException($message));
+            throw new KrakenException($message);
         }
     }
 
@@ -279,7 +275,7 @@ class Kraken implements ArrayAccess
      */
     protected function isShared($contract)
     {
-        $shared = (isset($this->register[$contract]['shared'])) ? $this->register[$contract]['shared'] : false;
+        $shared = (isset($this->registry[$contract]['shared'])) ? $this->registry[$contract]['shared'] : false;
 
         return isset($this->instances[$contract]) or $shared === true;
     }
@@ -333,7 +329,7 @@ class Kraken implements ArrayAccess
 
         if (! $concrete instanceof Closure) $concrete = $this->getClosure($contract, $concrete);
 
-        $this->register[$contract] = compact('concrete', 'shared');
+        $this->registry[$contract] = compact('concrete', 'shared');
 
         if ($this->hasBeenRegistered($contract)) $this->rebound($contract);
     }
@@ -441,7 +437,7 @@ class Kraken implements ArrayAccess
      */
     public function offsetExists($key)
     {
-        return isset($this->register[$key]);
+        return isset($this->registry[$key]);
     }
 
     /**
@@ -480,7 +476,7 @@ class Kraken implements ArrayAccess
      */
     public function offsetUnset($key)
     {
-        unset($this->register[$key]);
+        unset($this->registry[$key]);
 
         unset($this->instances[$key]);
     }
