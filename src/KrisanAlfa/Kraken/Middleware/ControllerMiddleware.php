@@ -30,17 +30,20 @@ class ControllerMiddleware extends Middleware
      */
     public function call()
     {
-        $controllerConfig = $this->app->config('kraken.controller');
+        if (empty($this->options))
+        {
+            $this->options = $this->app->config('kraken.controller');
+        }
 
-        $this->options = $controllerConfig;
-
-        if (!isset($this->options['mapping'])) {
+        if (! isset($this->options['mapping']))
+        {
             $this->next->call();
 
             return;
         }
 
-        if (empty($this->options['mapping'])) {
+        if (empty($this->options['mapping']))
+        {
             $this->next->call();
 
             return;
@@ -64,13 +67,20 @@ class ControllerMiddleware extends Middleware
     {
         $resourceUri = $this->app->request->getResourceUri();
 
-        foreach ($mapping as $uri => $Map) {
-            if (is_int($uri)) {
+        foreach ($mapping as $uri => $Map)
+        {
+            if (is_int($uri))
+            {
                 $uri = $Map;
                 $Map = null;
             }
 
-            if (strpos($resourceUri, $uri) === 0) {
+            $matcher = preg_replace('/:\w+/', '(\w+)', '/^'.addcslashes($uri, '\/').'(?:\/.*)*$/');
+            $matches = '';
+            $isMatch = preg_match($matcher, $resourceUri, $matches);
+
+            if ($isMatch)
+            {
                 $this->registerController($Map, $uri);
 
                 break;
@@ -89,23 +99,28 @@ class ControllerMiddleware extends Middleware
      */
     protected function registerController($Map, $uri)
     {
-        if (is_null($Map)) {
-            if (! isset($this->options['default'])) {
+        if (is_null($Map))
+        {
+            if ( ! isset($this->options['default']))
+            {
                 throw new KrakenException('URI "'.$uri.'" does not have suitable controller class "'.$Map.'"');
             }
 
             $Map = $this->options['default'];
         }
 
-        if (!empty($this->app)) {
+        if ( ! empty($this->app))
+        {
             $this->app->controller = $controller = $this->app->kraken->resolve($Map);
         }
 
-        if (! isset($controller)) {
+        if ( ! isset($controller))
+        {
             return;
         }
 
-        if (! $controller instanceof ControllerInterface) {
+        if ( ! $controller instanceof ControllerInterface)
+        {
             throw new KrakenException(
                 'Controller "'.$Map.'" should be instance of \KrisanAlfa\Kraken\Contract\ControllerInterface.'
             );

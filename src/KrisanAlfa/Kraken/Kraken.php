@@ -71,7 +71,8 @@ class Kraken implements ArrayAccess
      */
     protected function getClosure($contract, $concrete)
     {
-        return function ($container, $parameters = array()) use ($contract, $concrete) {
+        return function ($container, $parameters = array()) use ($contract, $concrete)
+        {
             $method = ($contract == $concrete) ? 'build' : 'resolve';
 
             return $container->$method($concrete, $parameters);
@@ -114,14 +115,20 @@ class Kraken implements ArrayAccess
     {
         $dependencies = array();
 
-        foreach ($parameters as $parameter) {
+        foreach ($parameters as $parameter)
+        {
             $dependency = $parameter->getClass();
 
-            if (array_key_exists($parameter->name, $primitives)) {
+            if (array_key_exists($parameter->name, $primitives))
+            {
                 $dependencies[] = $primitives[$parameter->name];
-            } elseif (is_null($dependency)) {
+            }
+            elseif (is_null($dependency))
+            {
                 $dependencies[] = $this->resolveNonClass($parameter);
-            } else {
+            }
+            else
+            {
                 $dependencies[] = $this->resolveClass($parameter);
             }
         }
@@ -140,9 +147,12 @@ class Kraken implements ArrayAccess
      */
     protected function resolveNonClass(ReflectionParameter $parameter)
     {
-        if ($parameter->isDefaultValueAvailable()) {
+        if ($parameter->isDefaultValueAvailable())
+        {
             return $parameter->getDefaultValue();
-        } else {
+        }
+        else
+        {
             $message = "Dependency {$parameter} unresolved nor they're registered.";
 
             throw new KrakenException($message);
@@ -160,13 +170,19 @@ class Kraken implements ArrayAccess
      */
     protected function resolveClass(ReflectionParameter $parameter)
     {
-        try {
+        try
+        {
             return $this->resolve($parameter->getClass()->name);
-        } catch (KrakenException $e) {
-            if ($parameter->isOptional()) {
+        }
+        catch (KrakenException $e)
+        {
+            if ($parameter->isOptional())
+            {
                 return $parameter->getDefaultValue();
-            } else {
-                App::getInstance()->error($e);
+            }
+            else
+            {
+                throw $e;
             }
         }
     }
@@ -181,8 +197,10 @@ class Kraken implements ArrayAccess
      */
     protected function keyParametersByArgument(array $dependencies, array $parameters)
     {
-        foreach ($parameters as $key => $value) {
-            if (is_numeric($key)) {
+        foreach ($parameters as $key => $value)
+        {
+            if (is_numeric($key))
+            {
                 unset($parameters[$key]);
 
                 $parameters[$dependencies[$key]->name] = $value;
@@ -202,7 +220,8 @@ class Kraken implements ArrayAccess
      */
     protected function fireResolvingCallbacks($contract, $object)
     {
-        if (isset($this->resolvingCallbacks[$contract])) {
+        if (isset($this->resolvingCallbacks[$contract]))
+        {
             $this->fireCallbackArray($object, $this->resolvingCallbacks[$contract]);
         }
 
@@ -219,7 +238,8 @@ class Kraken implements ArrayAccess
      */
     protected function fireCallbackArray($object, array $callbacks)
     {
-        foreach ($callbacks as $callback) {
+        foreach ($callbacks as $callback)
+        {
             call_user_func($callback, $object, $this);
         }
     }
@@ -235,7 +255,8 @@ class Kraken implements ArrayAccess
      */
     protected function share(Closure $closure)
     {
-        return function ($container) use ($closure) {
+        return function ($container) use ($closure)
+        {
             static $object;
 
             $object = $object ?: $closure($container);
@@ -257,7 +278,8 @@ class Kraken implements ArrayAccess
     {
         $instance = $this->resolve($contract);
 
-        foreach ($this->getReboundCallbacks($contract) as $callback) {
+        foreach ($this->getReboundCallbacks($contract) as $callback)
+        {
             call_user_func($callback, $this, $instance);
         }
     }
@@ -407,7 +429,8 @@ class Kraken implements ArrayAccess
 
         $reflector = new ReflectionClass($concrete);
 
-        if (! $reflector->isInstantiable()) {
+        if (! $reflector->isInstantiable())
+        {
             $message = "Dependency [$concrete] is not registered, thus the concrete is not instantiable.";
 
             throw new KrakenException($message);

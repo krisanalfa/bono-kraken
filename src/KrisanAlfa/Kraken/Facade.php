@@ -49,9 +49,13 @@ abstract class Facade
      */
     protected static function resolveFacadeInstance($name)
     {
-        if (is_object($name)) return $name;
+        if (is_object($name))
+        {
+            return $name;
+        }
 
-        if (isset(static::$resolvedInstance[$name])) {
+        if (isset(static::$resolvedInstance[$name]))
+        {
             return static::$resolvedInstance[$name];
         }
 
@@ -88,7 +92,8 @@ abstract class Facade
      */
     public static function getFacadeContainer()
     {
-        if (is_null(static::$container)) {
+        if (is_null(static::$container))
+        {
             static::$container = App::getInstance()->kraken;
         }
 
